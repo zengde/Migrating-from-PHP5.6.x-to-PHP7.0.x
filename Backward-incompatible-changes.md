@@ -1,31 +1,33 @@
 # PHP5.6.x版本迁移至7.0.x版本
 ## 向后兼容说明
 ### 错误和异常处理的变更
-许多的Fatal错误，包括一些可以被修正的Fatal错误，在PHP7中以Exceptions异常对待。这些Error Exceptions继承于 [Error](http://php.net/manual/en/class.error.php) 类。而 [Error](http://php.net/manual/en/class.error.php) 类则实现了异常基类 [Throwable](http://php.net/manual/en/class.throwable.php) 接口。 <br>
-PHP7中详细的Error相关的信息可以参考页面\[ [PHP7错误](http://php.net/manual/en/language.errors.php7.php) \]。本文中仅仅介绍和向后兼容有关的信息如下。
+许多的Fatal错误，包括一些可以被修正的Fatal错误，在PHP7中以Exceptions异常处理。这些Error Exceptions继承于 **Error** 类并实现了 **Throwable** 接口，**Throwable** 接口是所有继承的exceptions的基接口。 <br>
+
+PHP7中详细的Error处理的信息可以参考页面\[ [PHP7错误](http://php.net/manual/en/language.errors.php7.php) \]。本迁移指南仅仅列举影响向后兼容性的更改。
 
 #### 内部构造函数在失败时抛出异常
-在PHP7之前，类内部的构造函数在失败时总是返回NULL或者返回一个不可用的Object，但此版本开始，在构造函数初始化失败时总是会抛出[异常](http://php.net/manual/en/class.exception.php)。
+在PHP7之前，一些内部类在构造函数失败时将会返回 **NULL** 或者一个不可用的Object，但此版本开始，所有内部类在构造函数失败时会同用户类一样以同样的方式抛出[Exception](http://php.net/manual/en/class.exception.php)。
 
 #### 解析错误时会抛出 [ParseError](http://php.net/manual/en/class.parseerror.php)
 解析错误，现在开始会抛出一个 [ParseError](http://php.net/manual/en/class.parseerror.php) 对象。[eval\(\)](http://php.net/manual/en/function.eval.php) 函数现在开始可以通过 [catch](http://php.net/manual/en/language.exceptions.php#language.exceptions.catch) 捕捉异常，随之做相应处理。
 
-#### E_STRICT 等级的报错被重新分配
-所有**E_STRICT**级别的报错已重新分配到其他报错等级中。**E_STRICT**常量依然保留，所以当你设置报错等级为 **error_reporting\(E_ALL|E_STRICT\)**时，不会引起报错。<br>
+#### E_STRICT 等级的报错的变化
+所有 **E\_STRICT** 级别的报错已重新分配到其他报错等级中。**E\_STRICT**常量依然保留，所以当你使用 **error_reporting\(E\_ALL|E\_STRICT\)**时，不会引起报错。<br>
+
 变更情况如下表
 ![image](https://cloud.githubusercontent.com/assets/1308846/9434941/01402560-4a76-11e5-9943-f9f153745030.png)
 
 ### 变量处理环节的变更
-PHP7开始使用一种抽象的语法树来解析PHP代码文件。老版本的PHP因为PHP解析器的局限性是不可能实现这一特性的。但此处的改动引起了一些一致性问题，破坏了向后兼容性。本节详细介绍这块的情况。
+PHP7开始使用抽象的语法树来解析PHP代码文件。许多的改进由于老版本的PHP解析器的局限性而不可能实现。导致了除去一些特殊情况出现了一致性的问题，破坏了向后兼容性。本节详细介绍这块的情况。
 
 #### 对于间接变量、属性、方法的变动 
-间接的使用变量、属性、方法，现在开始严格按照从左到右的顺序执行，而不是以前混合各种形式产生各种可能。下表表明的这一改变引起的差异。
+间接的使用变量、属性、方法，现在开始严格按照从左到右的顺序执行，与以前的特殊情况的组合形式相对。下表表明的这一改变引起的差异。
 ![image](https://cloud.githubusercontent.com/assets/1308846/9435404/1bf947a2-4a7a-11e5-97bb-96677cc560fb.png)
-这块使用老得从右到左的方式的代码，必须重写了。通过花括号来明确顺序（见上图中间列），以使代码向前兼容PHP7.x，并向后兼容PHP5.x。
+这块使用老的从右到左的方式的代码，必须重写了。通过花括号来明确顺序（见上图中间列），以使代码向前兼容PHP7.x，并向后兼容PHP5.x。
 
-#### 对于 [list\(\)](http://php.net/manual/en/function.list.php) 函数处理上的修改
+#### [list\(\)](http://php.net/manual/en/function.list.php) 函数处理上的修改
 ##### [list\(\)](http://php.net/manual/en/function.list.php) 不再按照相反顺序插入元素
-[list\(\)](http://php.net/manual/en/function.list.php)函数从此开始按照原数组中的顺序插入到函数参数制定的位置上，不再翻转数据。这点修改只会作用在[list\(\)](http://php.net/manual/en/function.list.php)函数参数一起用了数组的\[\]符号时。举例如下：
+[list\(\)](http://php.net/manual/en/function.list.php)函数从此开始按照原数组中的顺序插入到函数参数指定的位置上，不再翻转数据。这点修改只会作用在[list\(\)](http://php.net/manual/en/function.list.php)函数参数结合了数组的\[\]符号时。举例如下：
 ```PHP
 <?php
 list($a[], $a[], $a[]) = [1, 2, 3];
@@ -54,7 +56,7 @@ array(3) {
   int(3)
 }
 ```
-在实际开发中，不建议使用依靠 [list\(\)](http://php.net/manual/en/function.list.php) 函数的参数来做排顺序这一操作，毕竟这样的hack用法在未来还是有可能调整。
+在一般情况下，不建议依靠 [list\(\)](http://php.net/manual/en/function.list.php) 函数赋值的顺序，因为这是一个在未来可能改变的执行细节。。
 
 ##### [list\(\)](http://php.net/manual/en/function.list.php) 函数参数不再允许为空
 [list\(\)](http://php.net/manual/en/function.list.php) 构造时不再允许参数为空的情况，下列情况将不再支持！
@@ -67,7 +69,7 @@ list($x, list(), $y) = $a;
 ```
 
 ##### [list\(\)](http://php.net/manual/en/function.list.php) 函数不再支持拆解字符串
-[list\(\)](http://php.net/manual/en/function.list.php) 不再允许拆解[字符串](http://php.net/manual/en/language.types.string.php)变量为字母，[str_split](http://php.net/manual/en/function.str-split.php)函数可以用于做此事。
+[list\(\)](http://php.net/manual/en/function.list.php) 不再允许拆解[字符串](http://php.net/manual/en/language.types.string.php)变量为字母，而应该使用[str_split](http://php.net/manual/en/function.str-split.php)函数。
 
 #### 在数组中的元素通过引用方式创建时，数组顺序会被改变
 数组中的元素在通过引用方式创建时，其数组顺序会被自动的改变。例如：
