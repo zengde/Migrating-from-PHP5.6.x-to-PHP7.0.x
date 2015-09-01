@@ -264,7 +264,7 @@ var_dump($int); // int(65535)
 
 #### [mcrypt](http://php.net/manual/en/book.mcrypt.php) 相关的
 移除已废弃的[mcrypt_generic_end\(\)](http://php.net/manual/zh/function.mcrypt-generic-end.php) 函数，请使用 [mcrypt_generic_deinit\(\)](http://php.net/manual/zh/function.mcrypt-generic-deinit.php) 。
-此外，已废弃的[mcrypt_ecb\(\)](http://php.net/manual/zh/function.mcrypt-ecb.php)，[mcrypt_cbc\(\)](http://php.net/manual/zh/function.mcrypt-cbc.php)，[mcrypt_cfb\(\)](http://php.net/manual/zh/function.mcrypt-cfb.php)和[mcrypt_ofb\(\)](http://php.net/manual/zh/function.mcrypt-ofb.php)函数被彻底删除，请使用[mcrypt_decrypt()](http://php.net/manual/zh/function.mcrypt-decrypt.php)与适当的[MCRYPT_MODE_*]常量来代替。
+此外，已废弃的[mcrypt_ecb\(\)](http://php.net/manual/zh/function.mcrypt-ecb.php)，[mcrypt_cbc\(\)](http://php.net/manual/zh/function.mcrypt-cbc.php)，[mcrypt_cfb\(\)](http://php.net/manual/zh/function.mcrypt-cfb.php)和[mcrypt_ofb\(\)](http://php.net/manual/zh/function.mcrypt-ofb.php)函数被彻底删除，请使用[mcrypt_decrypt()](http://php.net/manual/zh/function.mcrypt-decrypt.php)与适当的[MCRYPT_MODE_*]()常量来代替。
 
 #### [intl](http://php.net/manual/en/book.intl.php) 相关的
 [datefmt_set_timezone_id\(\)](http://php.net/manual/zh/intldateformatter.settimezoneid.php)与[IntlDateFormatter::setTimeZoneID\(\)](http://php.net/manual/zh/intldateformatter.settimezoneid.php)被删除，分别使用[datefmt_set_timezone\(\)](http://php.net/manual/zh/intldateformatter.settimezone.php)与[IntlDateFormatter::setTimeZone\(\)](http://php.net/manual/zh/intldateformatter.settimezone.php)。
