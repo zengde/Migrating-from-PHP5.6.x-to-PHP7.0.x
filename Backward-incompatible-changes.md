@@ -115,8 +115,8 @@ function f() {
 ```
 作为一个基本原则，这样的变量套变量的使用方式，在[global](http://php.net/manual/en/language.variables.scope.php#language.variables.scope.global)这种场景下是不被提倡的。
 
-#### 函数参数中的括号不再影响(行为?)
-在PHP5中，参数若使被引用的并且使用括号，会没有报错发生。但在PHP7开始，这种场景都会印发一个报错。
+#### 函数参数中的括号不再影响的行为
+在PHP5中，函数通过引用传递的参数使用多余的括号包围，可以不出现严格标准警告。但在PHP7开始，都会发出该警告。
 ```PHP
 <?php
 function getArray() {
@@ -133,16 +133,16 @@ function squareArray(array &$a) {
 squareArray((getArray()));
 ?>
 ```
-上述示例代码将会产生如下输出：
+上述示例代码会输出：
 ```PHP
 Notice: Only variables should be passed by reference in /tmp/test.php on line 13
 ```
 
 ### [foreach](http://php.net/manual/en/control-structures.foreach.php) 的改变
-关于 [foreach](http://php.net/manual/en/control-structures.foreach.php) 的修改比较少，主要是修改了数组遍历时的数组指针，以及修改了数组的迭代。
+对 [foreach](http://php.net/manual/en/control-structures.foreach.php) 控制结构的行为作了细微的更改，主要是围绕处理数组遍历时的内部数组指针和迭代时对数组的修改。
 
 #### [foreach](http://php.net/manual/en/control-structures.foreach.php) 遍历期间不再修改数组指针
-在PHP7之前，当数组通过[foreach](http://php.net/manual/en/control-structures.foreach.php)迭代时，数组指针会移动。现在开始，不再如此，见下面代码：
+在PHP7之前，当数组通过[foreach](http://php.net/manual/en/control-structures.foreach.php)迭代时，数组指针会被修改。现在开始，不再如此，见下面代码：
 ```PHP
 <?php
 $array = [0, 1, 2];
@@ -165,10 +165,10 @@ int(0)
 ```
 
 #### [foreach](http://php.net/manual/en/control-structures.foreach.php) 通过值遍历时，操作的值为数组的副本
-当默认使用通过值遍历数组时，[foreach](http://php.net/manual/en/control-structures.foreach.php)实际操作的是数组的迭代副本，而非数组本身。这就意味着，[foreach](http://php.net/manual/en/control-structures.foreach.php)中的操作不会修改原数组的值。
+当使用默认的通过值遍历数组时，[foreach](http://php.net/manual/en/control-structures.foreach.php)实际操作的是数组的迭代副本，而非数组本身。这就意味着，在迭代中数组的变化不会影响原数组的值。
 
 #### [foreach](http://php.net/manual/en/control-structures.foreach.php) 通过引用遍历时，有更好的迭代特性
-当使用引用遍历数组时，现在[foreach](http://php.net/manual/en/control-structures.foreach.php)在迭代中更好的跟踪变化。例如，在迭代中添加一个迭代值到数组中，例如下面代码：
+当使用引用遍历时，现在[foreach](http://php.net/manual/en/control-structures.foreach.php)在迭代中更好的跟踪数组变化。例如，在迭代中添加一个值到数组中也会迭代添加的值，例如下面代码：
 ```PHP
 <?php
 $array = [0];
@@ -189,14 +189,14 @@ int(1)
 ```
 
 #### [non-Traversable](http://php.net/manual/en/class.traversable.php) 对象的遍历
-[non-Traversable](http://php.net/manual/en/class.traversable.php) 对象的遍历与通过引用遍历相似，具有相同的行为特性，[在遍历期间对原数据进行的操作将会被感知](http://php.net/manual/en/migration70.incompatible.php#migration70.incompatible.foreach.by-ref)。
+[non-Traversable](http://php.net/manual/en/class.traversable.php) 对象的遍历与宾利通过引用的数组相似，具有相同的行为特性，[对遍历期间修改数组的行为的改进](http://php.net/manual/en/migration70.incompatible.php#migration70.incompatible.foreach.by-ref)将同样应用到遍历对象时添加或删除对象的属性。
 
 ### [整形](http://php.net/manual/en/language.types.integer.php)处理上的调整
-#### 无效的八进制常量
-此前，八进制中包含无效数据会自动被截断（0128被当做为012）。现在，一个无效的八进制字面会造成分析错误。
+#### 无效的八进制文本
+此前，八进制中包含无效数据会自动被截断（0128被当做为012）。现在，一个无效的八进制文本会造成解析错误。
 
-#### 负位置
-位移的负数将抛出一个 [ArithmeticError](http://php.net/manual/en/class.arithmeticerror.php) 
+#### 负位移
+负数的位移将抛出一个 [ArithmeticError](http://php.net/manual/en/class.arithmeticerror.php) 
 ```PHP
 <?php
 var_dump(1 >> -1);
@@ -214,11 +214,11 @@ Stack trace:
   thrown in /tmp/test.php on line 2
 ```
 #### 超出范围的位移
-位移（任一方向）超出一个整数的位宽度会得到0。以前，这种转变的行为是依赖于运行环境的机器架构结构。
+位移（任一方向）超出一个整数的位宽度会得到0。以前，这种转变的行为是依赖于运行环境的机器架构。
 
 ### [字符串](http://php.net/manual/en/language.types.string.php)处理上的调整
 #### 十六进制字符串不再被认为是数字
-含十六进制字符串不再被认为是数字。例如：
+含十六进制数的字符串不再被认为是数字。例如：
 ```PHP
 <?php
 var_dump("0x123" == "291");
@@ -256,50 +256,50 @@ var_dump($int); // int(65535)
 ```
 
 #### \u{ 可能触发错误
-由于新的[Unicode转译语法](http://php.net/manual/en/migration70.new-features.php#migration70.new-features.unicode-codepoint-escape-syntax)，字符串中含有 **\\u{ ** 时会触发Fatal错误。为了避免这一报错，应该避免反斜杠开头。
+由于添加了新的[Unicode Codepoint Escape Syntax](http://php.net/manual/en/migration70.new-features.php#migration70.new-features.unicode-codepoint-escape-syntax)，字符串中含有 **\\u{ **后面跟着无效的序列 时会触发Fatal错误。为了避免这一报错，应该转义开头的反斜杠。
 
 ### 被移除的函数
 #### [call_user_method\(\)](http://php.net/manual/en/function.call-user-method.php) 与 [call_user_method_array\(\)](http://php.net/manual/en/function.call-user-method-array.php)
-这些函数被在PHP4.1.0开始被标记为过时的，在PHP7开始被删除。建议使用 [call_user_func\(\)](http://php.net/manual/en/function.call-user-func.php) 和 [call_user_func_array\(\)](http://php.net/manual/en/function.call-user-func-array.php) 。你可以考虑下 [变量函数](http://php.net/manual/en/functions.variable-functions.php)或者其他的选择。
+这些函数从PHP4.1.0开始已经停用，分别使用 [call_user_func\(\)](http://php.net/manual/en/function.call-user-func.php) 和 [call_user_func_array\(\)](http://php.net/manual/en/function.call-user-func-array.php)代替。你也可以考虑使用 [可变函数](http://php.net/manual/en/functions.variable-functions.php)或者其他的选择。
 
 #### [mcrypt](http://php.net/manual/en/book.mcrypt.php) 相关的
-mcrypt_generic_end\(\) 被删除，建议使用 mcrypt_generic_deinit\(\) 。
-此外，废弃的mcrypt_ecb\(\)，mcrypt_cbc\(\)，mcrypt_cfb\(\)和mcrypt_ofb\(\)功能，建议使用目前还支持的mcrypt_decrypt()与适当的MCRYPT_MODE_\*常量。
+移除已废弃的[mcrypt_generic_end\(\)](http://php.net/manual/zh/function.mcrypt-generic-end.php) 函数，请使用 [mcrypt_generic_deinit\(\)](http://php.net/manual/zh/function.mcrypt-generic-deinit.php) 。
+此外，已废弃的[mcrypt_ecb\(\)](http://php.net/manual/zh/function.mcrypt-ecb.php)，[mcrypt_cbc\(\)](http://php.net/manual/zh/function.mcrypt-cbc.php)，[mcrypt_cfb\(\)](http://php.net/manual/zh/function.mcrypt-cfb.php)和[mcrypt_ofb\(\)](http://php.net/manual/zh/function.mcrypt-ofb.php)函数被彻底删除，请使用[mcrypt_decrypt()](http://php.net/manual/zh/function.mcrypt-decrypt.php)与适当的**MCRYPT_MODE_\***常量来代替。
 
 #### [intl](http://php.net/manual/en/book.intl.php) 相关的
-datefmt_set_timezone_id\(\)与IntlDateFormatter::setTimeZoneID\(\)别名被删除，建议使用datefmt_set_timezone\(\)与IntlDateFormatter::setTimeZone\(\)。
+[datefmt_set_timezone_id\(\)](http://php.net/manual/zh/intldateformatter.settimezoneid.php)与[IntlDateFormatter::setTimeZoneID\(\)](http://php.net/manual/zh/intldateformatter.settimezoneid.php)被删除，分别使用[datefmt_set_timezone\(\)](http://php.net/manual/zh/intldateformatter.settimezone.php)与[IntlDateFormatter::setTimeZone\(\)](http://php.net/manual/zh/intldateformatter.settimezone.php)。
 
 #### [set_magic_quotes_runtime\(\)](http://php.net/manual/en/function.set-magic-quotes-runtime.php)
-set_magic_quotes_runtime\(\)与它的别名函数magic_quotes_runtime\(\)都在PHP7中删除了。他们在PHP5.3.0中就被标记被过时的。
+[set_magic_quotes_runtime\(\)](http://php.net/manual/zh/function.set-magic-quotes-runtime.php)与它的别名函数[magic_quotes_runtime\(\)](http://php.net/manual/zh/function.magic-quotes-runtime.php)都在PHP7中删除了。他们在PHP5.3.0中就①被废弃，并且在[PHP5.4.0中移除](http://php.net/manual/zh/migration54.incompatible.php)的魔术引号下是无效的。
 
 #### [set_socket_blocking\(\)](http://php.net/manual/en/function.set-socket-blocking.php)
-set_socket_blocking\(\)已被移除，建议使用stream_set_blocking\(\)。
+[stream_set_blocking\(\)](http://php.net/manual/zh/function.stream-set-blocking.php)的别名函数[set_socket_blocking\(\)](http://php.net/manual/zh/function.set-socket-blocking.php)已被移除。
 
 #### [dl\(\)](http://php.net/manual/en/function.dl.php) 在PHP-FPM中
-dl\(\)函数不能在PHP-FPM中使用了，它的功能做在了CLI、嵌入到SAPIs中了。
+[dl\(\)](http://php.net/manual/zh/function.dl.php)函数不能在PHP-FPM中使用了，它的功能仍然在CLI、嵌入SAPIs中保留。
 
-#### [GD](http://php.net/manual/en/book.image.php) 类型的函数
-PostScript Type1字体的支持已经从GD扩展删除，涉及的函数有：
-* imagepsbbox()
-* imagepsencodefont()
-* imagepsextendfont()
-* imagepsfreefont()
-* imagepsloadfont()
-* imagepsslantfont()
-* imagepstext()
-建议使用TrueType字体和其相关的功能代替。
+#### [GD](http://php.net/manual/en/book.image.php) Type1 函数
+PostScript Type1字体的支持已经从GD扩展删除，涉及的删除的函数有：
+* [imagepsbbox()](http://php.net/manual/zh/function.imagepsbbox.php)
+* [imagepsencodefont()](http://php.net/manual/zh/function.imagepsencodefont.php)
+* [imagepsextendfont()](http://php.net/manual/zh/function.imagepsextendfont.php)
+* [imagepsfreefont()](http://php.net/manual/zh/function.imagepsfreefont.php)
+* [imagepsloadfont()](http://php.net/manual/zh/function.imagepsloadfont.php)
+* [imagepsslantfont()](http://php.net/manual/zh/function.imagepsslantfont.php)
+* [imagepstext()](http://php.net/manual/zh/function.imagepstext.php)
+建议使用TrueType字体和其相关的函数代替。
 
-### 删除INI配置
-#### 删除的功能
-下面的INI指令以及相关的功能被删除：
+### 移除的INI配置
+#### 删除的特性
+下面的INI指令以及相关的特性被删除：
 * [always_populate_raw_post_data](http://php.net/manual/en/ini.core.php#ini.always-populate-raw-post-data)
 * [asp_tags](http://php.net/manual/en/ini.core.php#ini.asp-tags)
 
 #### xsl.security_prefs
-xsl.security_prefs指令已被删除。相反，该[xsltprocessor::setsecurityprefs\(\)](http://php.net/manual/en/xsltprocessor.setsecurityprefs.php)方法用于控制在每个处理器上的安全选项。
+xsl.security_prefs指令已被删除。相反，该[xsltprocessor::setsecurityprefs\(\)](http://php.net/manual/en/xsltprocessor.setsecurityprefs.php)方法用于控制每个处理器的安全性偏好。
 
-### 其他不向后兼容的变更
-#### [New](http://php.net/manual/en/language.oop5.basic.php#language.oop5.basic.new) 对象不能被引用分配
+### 其他向后不兼容的变更
+#### 不能赋值引用的**New**对象
 [New](http://php.net/manual/en/language.oop5.basic.php#language.oop5.basic.new)语句的结果不再能通过引用赋值给一个变量，如下代码：
 ```PHP
 <?php
@@ -316,27 +316,27 @@ PHP7中的输出：
 Parse error: syntax error, unexpected 'new' (T_NEW) in /tmp/test.php on line 3
 ```
 
-#### 无效的类、接口和特性的名字
-下面的名称不能被用来类、接口、特性的名称：
-* bool
-* int
-* float
-* string
-* NULL
-* TRUE
-* FALSE
-此外，下列名称不应该被使用。虽然他们不会产生在PHP 7中的一个错误，他们是保留供将来使用，应认为已过时。
-* resource
-* object
-* mixed
+#### 无效的类、接口和trait名
+下面的名称不能被用来类、接口、trait的名称：
+* [bool](http://php.net/manual/zh/language.types.boolean.php)
+* [int](http://php.net/manual/zh/language.types.integer.php)
+* [float](http://php.net/manual/zh/language.types.float.php)
+* [string](http://php.net/manual/zh/language.types.string.php)
+* **NULL**
+* **TRUE**
+* **FALSE**
+此外，下列名称不应该被使用。虽然他们不会在PHP 7中发生错误，他们是保留供将来使用，应认为已过时。
+* [resource](http://php.net/manual/zh/language.types.resource.php)
+* [object](http://php.net/manual/zh/language.types.object.php)
+* [mixed](http://php.net/manual/zh/language.pseudo-types.php#language.types.mixed)
 * numeric
 
 #### ASP语法标记、Script PHP语法标记被移除
-使用ASP脚本标签，或者Script的PHP代码，已被删除。受影响的标签是：
+使用ASP脚本标签，或者Script标签定界的PHP代码，已被删除。受影响的标签是：
 ![image](https://cloud.githubusercontent.com/assets/1308846/9438212/bdeec078-4a8e-11e5-91b5-5e6b92e4019d.png)
 
-#### 不允许调用不确定的情况
-[之前PHP5.6的过时说明中](http://php.net/manual/en/migration56.deprecated.php#migration56.deprecated.incompatible-context)，静态调用一个非静态方法，会在静态调用中被提示未定义 $this ，并会报错。
+#### 禁止从不兼容的上下文调用方法
+[之前PHP5.6已废止的特性中](http://php.net/manual/en/migration56.deprecated.php#migration56.deprecated.incompatible-context)，从不相容上下文的非静态方法静态调用将会导致调用中的$this 变量未定义，并引发废止警告。
 ```PHP
 <?php
 class A {
@@ -364,8 +364,8 @@ Deprecated: Non-static method A::test() should not be called statically in /tmp/
 Notice: Undefined variable: this in /tmp/test.php on line 3
 NULL
 ```
-#### [yield]() 现在开始作为正确的（联想？）算子
-yield 不再需要括号，可以作为一个正确的联想算子优先于 **print** 与 ** => **，这将产生下列行为：
+#### [yield](http://php.net/manual/zh/language.generators.syntax.php#control-structures.yield) 现在开始作为右结合运算符
+yield 不再需要括号，可以作为一个右结合运算符，优先级别介于 **print** 与 ** => **之间，这可能会导致行为的改变：
 ```PHP
 <?php
 echo yield -1;
@@ -381,10 +381,10 @@ yield ($foo or die);
 (yield $foo) or die;
 ?>
 ```
-括号可以用来消除歧义的情况。
+可以用括号来消除歧义的情况。
 
-#### 函数不能有多个相同的名称的参数
-不允许函数在参数中出现相同名称的参数。例如下列代码，将会产生 **E_COMPILE_ERROR** 的报错。
+#### 函数不能有相同名称的参数
+不允许在函数中定义相同名称的参数。例如下列代码，将会触发 **E_COMPILE_ERROR** 。
 ```PHP
 <?php
 function foo($a, $b, $unused, $unused) {
@@ -394,10 +394,10 @@ function foo($a, $b, $unused, $unused) {
 ```
 
 #### [$HTTP_RAW_POST_DATA](http://php.net/manual/en/reserved.variables.httprawpostdata.php) 被移除
-$HTTP_RAW_POST_DATA 不再被支持。 可以使用 php://input 流数据来代替实现。
+[$HTTP_RAW_POST_DATA](http://php.net/manual/zh/reserved.variables.httprawpostdata.php) 不再被支持。 应使用 [php://input](http://php.net/manual/zh/wrappers.php.php#wrappers.php.input) 流数据来代替。
 
 #### \# 注释已被移除
-INI文件中以\#符号作为注释的内容已被移除，**;**符号将代替**\#**，这个改变同样适用于PHP.ini文件，以及parse_ini_file()和parse_ini_string()处理文件期间。
+INI文件中以\#符号为前缀的注释支持已被移除，**;**符号将代替**\#**，此更改适用于PHP.ini文件，以及由[parse_ini_file()](http://php.net/manual/zh/function.parse-ini-file.php)和[parse_ini_string()](http://php.net/manual/zh/function.parse-ini-string.php)处理的文件。
 
 ## 用户贡献说明
 暂无
