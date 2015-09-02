@@ -131,8 +131,8 @@ object(class@anonymous)#2 (0) {
 ```
 详细文档可以查看[匿名类参考](http://php.net/manual/en/language.oop5.anonymous.php)
 
-### Unicode codepoint转义语法
-通过十六进制形式的codepoint与双引号或heredoc组成的字符串生成UTF-8 codepoint，可以接受任何有效的codepoint，并且开头的0是可以省略的。
+### Unicode 代码点转义语法
+通过十六进制形式的*代码点*与双引号或heredoc组成的字符串生成UTF-8代码点，可以接受任何有效的*代码点*，并且开头的0是可以省略的。
 ```PHP
 echo "\u{aa}";
 echo "\u{0000aa}";
@@ -217,6 +217,7 @@ Fatal error: Uncaught CustomError: Some error message
 这个特性会带来两个PHP.ini设置(以及它们的默认值): 
 * [zend.assertions](http://php.net/manual/en/ini.core.php#ini.zend.assertions) = 1
 * [assert.exception](http://php.net/manual/en/info.configuration.php#ini.assert.exception) = 0
+
 zend.assertions有三种值：
 * 1 = 生成并且执行代码（开发模式）
 * 0 = 执行代码并且在运行期间跳跃
@@ -274,7 +275,7 @@ echo $gen->getReturn(), PHP_EOL;
 能够从发生器显示地返回一个最终值有一个很方便的地方，可以通过发生器（也许是某种协程计算）最终返回的值来决定客户端代码如何执行。这比强制客户端代码首先检查最终值是否已经产生了，如果是，再专门负责处理该值简单多了。
 
 ### 生成器委派
-生成器委派建立在上面说到的生成器返回表达式上，它通过使用*yield from <expr>*的新语法，其中<expr>可以是任何Traversable（可遍历）的对象或数组，<expr>将被迭代直到不再有效，然后将继续向下执行生成器。此功能使yield语句被分解成更小的操作，从而具有更高的可重用性的清洁代码。
+生成器委派建立在上面说到的生成器返回表达式上，它通过使用*yield from &lt;expr>*的新语法，其中&lt;expr>可以是任何Traversable（可遍历）的对象或数组，&lt;expr>将被迭代直到不再有效，然后将继续向下执行生成器。此功能使yield语句被分解成更小的操作，从而具有更高的可重用性的清洁代码。
 ```PHP
 <?php
 
@@ -393,6 +394,7 @@ preg_replace_callback_array(
 
 ### [CSPRNG](http://php.net/manual/en/book.csprng.php) 系列函数
 该特性引入两个新的函数，用于生成加密安全的整形与字符串。它提供了简单的API和平台无关性。
+
 函数声明：
 ```PHP
 string random_bytes(int length);
@@ -400,7 +402,7 @@ int random_int(int min, int max);
 ```
 两个函数在没有找到足够的随机性源时会报**E_WARNING**错误并且返回false。
 
-### [list()](http://php.net/manual/en/function.list.php)可以拆解实现了[ArrayAccess](http://php.net/manual/en/class.arrayaccess.php)的对象
+### [list()](http://php.net/manual/en/function.list.php)可以拆解实现了[ArrayAccess](http://php.net/manual/en/class.arrayaccess.php)接口的对象
 
 ## 用户贡献记录
 暂无
