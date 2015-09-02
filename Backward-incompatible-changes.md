@@ -227,14 +227,14 @@ var_dump("0xe" + "0x1");
 var_dump(substr("foo", "0x1"));
 ?>
 ```
-在PHP5中得输出：
+在PHP5中的输出：
 ```PHP
 bool(true)
 bool(true)
 int(15)
 string(2) "oo"
 ```
-在PHP7中得输出：
+在PHP7中的输出：
 ```PHP
 bool(false)
 bool(false)
@@ -337,8 +337,8 @@ Parse error: syntax error, unexpected 'new' (T_NEW) in /tmp/test.php on line 3
 使用ASP脚本标签，或者Script标签定界的PHP代码，已被删除。受影响的标签是：
 ![image](https://cloud.githubusercontent.com/assets/1308846/9438212/bdeec078-4a8e-11e5-91b5-5e6b92e4019d.png)
 
-#### 禁止从不兼容的上下文调用方法
-[之前PHP5.6已废止的特性中](http://php.net/manual/en/migration56.deprecated.php#migration56.deprecated.incompatible-context)，从不相容上下文的非静态方法静态调用将会导致调用中的$this 变量未定义，并引发废止警告。
+#### 禁止从不兼容的上下文调用
+[之前PHP5.6已废止的特性中](http://php.net/manual/en/migration56.deprecated.php#migration56.deprecated.incompatible-context)，静态调用上下文不一致的非静态方法将会导致调用中的$this 变量未定义，并引发废止警告。
 ```PHP
 <?php
 class A {

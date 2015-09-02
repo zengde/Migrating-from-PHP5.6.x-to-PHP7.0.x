@@ -5,11 +5,11 @@
 * [SAPI中的改动](./Sapi-changes.md)
 * [7.0.x版本开始停用的特性](./Deprecated.md)
 * [函数变更](./Changed-functions.md)
-* [新的函数](http://php.net/manual/en/migration70.new-functions.php)
-* [新的类与接口](http://php.net/manual/en/migration70.classes.php)
-* [新的全局常量](http://php.net/manual/en/migration70.constants.php)
-* [被移除的扩展与SAPIs](http://php.net/manual/en/migration70.removed-exts-sapis.php)
-* [其他修改](http://php.net/manual/en/migration70.other-changes.php)
+* [新的函数](./New-functions.md)
+* [新的类与接口](./classes.md)
+* [新的全局常量](./constants.md)
+* [被移除的扩展与SAPIs](./removed-exts-sapis.md)
+* [其他修改](./other-changes.md)
 
 ## PHP7 依然处于开发中
 ```PHP
