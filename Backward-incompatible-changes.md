@@ -1,33 +1,91 @@
 # PHP5.6.x版本迁移至7.0.x版本
-## 向后兼容说明
-### 错误和异常处理的变更
-许多的Fatal错误，包括一些可以被修正的Fatal错误，在PHP7中以Exceptions异常处理。这些Error Exceptions继承于 **Error** 类并实现了 **Throwable** 接口，**Throwable** 接口是所有继承的exceptions的基接口。 <br>
+## 不向后兼容的变更
+### 错误和异常处理相关的变更
+在 PHP 7 中，很多致命错误以及可恢复的致命错误，都被转换为异常来处理了。 这些异常继承自 [**Error**](http://php.net/manual/en/class.error.php) 类，此类实现了 [**Throwable**](http://php.net/manual/en/class.throwable.php) 接口 （所有异常都实现了这个基础接口）。<br>
 
-PHP7中详细的Error处理的信息可以参考页面\[ [PHP7错误](http://php.net/manual/en/language.errors.php7.php) \]。本迁移指南仅仅列举影响向后兼容性的更改。
+这也意味着，当发生错误的时候，以前代码中的一些错误处理的代码将无法被触发。 因为在 PHP 7 版本中，已经使用抛出异常的错误处理机制了。 （如果代码中没有捕获 [**Error**](http://php.net/manual/en/class.error.php) 异常，那么会引发致命错误）。
 
-#### 内部构造函数在失败时抛出异常
-在PHP7之前，一些内部类在构造函数失败时将会返回 **NULL** 或者一个不可用的Object，但此版本开始，所有内部类在构造函数失败时会同用户类一样以同样的方式抛出[Exception](http://php.net/manual/en/class.exception.php)。
+PHP 7 中的错误处理的更完整的描述，请参见 [PHP 7 错误处理](http://php.net/manual/zh/language.errors.php7.php)。 本迁移指导主要是列出对兼容性有影响的变更。
 
-#### 解析错误时会抛出 [ParseError](http://php.net/manual/en/class.parseerror.php)
-解析错误，现在开始会抛出一个 [ParseError](http://php.net/manual/en/class.parseerror.php) 对象。[eval\(\)](http://php.net/manual/en/function.eval.php) 函数现在开始可以通过 [catch](http://php.net/manual/en/language.exceptions.php#language.exceptions.catch) 捕捉异常，随之做相应处理。
+#### 当内部构造器失败的时候，总是抛出异常
+在之前版本中，如果内部类的构造器出错，会返回 **NULL** 或者一个不可用的对象。 从 PHP 7 开始，如果内部类构造器发生错误， 那么会同一些用户类一样抛出[Exception异常](http://php.net/manual/en/class.exception.php)。
 
-#### E_STRICT 等级的报错的变化
-所有 **E\_STRICT** 级别的报错已重新分配到其他报错等级中。**E\_STRICT**常量依然保留，所以当你使用 **error_reporting\(E\_ALL|E\_STRICT\)**时，不会引起报错。<br>
+#### 解析错误会抛出 [ParseError](http://php.net/manual/en/class.parseerror.php) 异常
+解析错误会抛出 [ParseError](http://php.net/manual/en/class.parseerror.php) 异常。对于 [eval()](http://php.net/manual/zh/function.eval.php) 函数，需要将其包含到一个 [catch](http://php.net/manual/zh/language.exceptions.php#language.exceptions.catch) 代码块中来处理解析错误。
+
+#### E_STRICT 警告级别变更
+所有 **E\_STRICT** 警告都被迁移到其他级别。**E\_STRICT**常量依然保留，所以调用 *error_reporting\(E\_ALL|E\_STRICT\)*不会引发错误。<br>
 
 变更情况如下表
-![image](https://cloud.githubusercontent.com/assets/1308846/9434941/01402560-4a76-11e5-9943-f9f153745030.png)
+<table><tbody><tr style><th style="background-color:#C4C9DF;">场景</th>
+<th style="background-color:#C4C9DF;">新的级别/行为</th>
+</tr>
+</tbody>
+<tbody><tr><td>将资源类型的变量用作键来进行索引</td>
+<td><span style="font-weight:bolder;">E_NOTICE</span></td>
+</tr>
+<tr><td>抽象静态方法</td>
+<td>不再警告，会引发错误</td>
+</tr>
+<tr><td>重复定义构造器函数</td>
+<td>不再警告，会引发错误</td>
+</tr>
+<tr><td>在继承的时候，方法签名不匹配</td>
+<td><span style="font-weight:bolder;">E_WARNING</span></td>
+</tr>
+<tr><td>在两个 trait 中包含相同的（兼容的）属性</td>
+<td>不再警告，会引发错误</td>
+</tr>
+<tr><td>以非静态调用的方式访问静态属性</td>
+<td><span style="font-weight:bolder;">E_NOTICE</span></td>
+</tr>
+<tr><td>变量应该以引用的方式赋值</td>
+<td><span style="font-weight:bolder;">E_NOTICE</span></td>
+</tr>
+<tr><td>变量应该以引用的方式传递（到函数参数中）</td>
+<td><span style="font-weight:bolder;">E_NOTICE</span></td>
+</tr>
+<tr><td>以静态方式调用实例方法</td>
+<td><span style="font-weight:bolder;">E_DEPRECATED</span></td>
+</tr>
+</tbody>
+</table>
 
-### 变量处理环节的变更
-PHP7开始使用抽象的语法树来解析PHP代码文件。许多的改进由于老版本的PHP解析器的局限性而不可能实现。导致了除去一些特殊情况出现了一致性的问题，破坏了向后兼容性。本节详细介绍这块的情况。
+### 变量处理的变更
+PHP7开始使用抽象语法树来解析PHP文件。许多的改进由于老版本的PHP解析器的局限性而不可能实现。导致了在一些特殊情况出现了向后不兼容的问题。本节详细介绍这些特殊情况。
 
-#### 对于间接变量、属性、方法的变动 
-间接的使用变量、属性、方法，现在开始严格按照从左到右的顺序执行，与以前的特殊情况的组合形式相对。下表表明的这一改变引起的差异。
-![image](https://cloud.githubusercontent.com/assets/1308846/9435404/1bf947a2-4a7a-11e5-97bb-96677cc560fb.png)
-这块使用老的从右到左的方式的代码，必须重写了。通过花括号来明确顺序（见上图中间列），以使代码向前兼容PHP7.x，并向后兼容PHP5.x。
+#### 处理间接变量、属性和方法的变更 
+间接的使用变量、属性和方法，现在开始严格按照从左到右的顺序执行，与以前的特殊情况的混合形式相对。下表列出了赋值顺序的变更。
 
-#### [list\(\)](http://php.net/manual/en/function.list.php) 函数处理上的修改
-##### [list\(\)](http://php.net/manual/en/function.list.php) 不再按照相反顺序插入元素
-[list\(\)](http://php.net/manual/en/function.list.php)函数从此开始按照原数组中的顺序插入到函数参数指定的位置上，不再翻转数据。这点修改只会作用在[list\(\)](http://php.net/manual/en/function.list.php)函数参数结合了数组的\[\]符号时。举例如下：
+<table><tbody><tr><th style="background-color:#C4C9DF;">表达式</th>
+<th style="background-color:#C4C9DF;">PHP 5 解析器</th>
+<th style="background-color:#C4C9DF;">PHP 7 解析器</th>
+</tr>
+</tbody>
+<tbody class="tbody"><tr><td>$$foo['bar']['baz']</td>
+<td>${$foo['bar']['baz']}</td>
+<td>($$foo)['bar']['baz']</td>
+</tr>
+<tr><td>$foo-&gt;$bar['baz']</td>
+<td>$foo-&gt;{$bar['baz']}</td>
+<td>($foo-&gt;$bar)['baz']</td>
+</tr>
+<tr><td>$foo-&gt;$bar['baz']()</td>
+<td>$foo-&gt;{$bar['baz']}()</td>
+<td>($foo-&gt;$bar)['baz']()</td>
+</tr>
+<tr><td>Foo::$bar['baz']()</td>
+<td>Foo::{$bar['baz']}()</td>
+<td>(Foo::$bar)['baz']()</td>
+</tr>
+</tbody>
+</table>
+
+以前使用的从右到左的方式的代码需要通过花括号来明确顺序（见上表中间列），以使代码同时向前兼容PHP7.x，并向后兼容PHP5.x。
+
+#### [list\(\)](http://php.net/manual/en/function.list.php) 函数处理的变更
+##### [list\(\)](http://php.net/manual/en/function.list.php) 不再按照相反的顺序赋值变量
+[list\(\)](http://php.net/manual/en/function.list.php)函数将按照变量定义的顺序赋值，而不是相反的顺序。一般来说，这只会影响[list\(\)](http://php.net/manual/en/function.list.php)函数结合数组的\[\]符号时的情况。举例如下：
 ```PHP
 <?php
 list($a[], $a[], $a[]) = [1, 2, 3];
@@ -56,9 +114,9 @@ array(3) {
   int(3)
 }
 ```
-在一般情况下，不建议依靠 [list\(\)](http://php.net/manual/en/function.list.php) 函数赋值的顺序，因为这是一个在未来可能改变的执行细节。。
+在一般情况下，不建议依靠 [list\(\)](http://php.net/manual/en/function.list.php) 函数赋值的顺序，因为这个实现细节有可能会在未来改变。
 
-##### [list\(\)](http://php.net/manual/en/function.list.php) 函数参数不再允许为空
+##### 使用空的[list\(\)](http://php.net/manual/en/function.list.php) 函数参数被移除
 [list\(\)](http://php.net/manual/en/function.list.php) 构造时不再允许参数为空的情况，下列情况将不再支持！
 ```PHP
 <?php
@@ -68,7 +126,7 @@ list($x, list(), $y) = $a;
 ?>
 ```
 
-##### [list\(\)](http://php.net/manual/en/function.list.php) 函数不再支持拆解字符串
+##### [list\(\)](http://php.net/manual/en/function.list.php) 函数不能解包字符串
 [list\(\)](http://php.net/manual/en/function.list.php) 不再允许拆解[字符串](http://php.net/manual/en/language.types.string.php)变量为字母，而应该使用[str_split](http://php.net/manual/en/function.str-split.php)函数。
 
 #### 在数组中的元素通过引用方式创建时，数组顺序会被改变

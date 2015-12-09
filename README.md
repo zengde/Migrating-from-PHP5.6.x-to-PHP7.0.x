@@ -1,6 +1,6 @@
 # PHP 5.6.x 版本迁移至 PHP 7.0.x 版本
 ## 目录
-* [向后兼容性说明](./Backward-incompatible-changes.md)
+* [不向后兼容的变更](./Backward-incompatible-changes.md)
 * [新的特性](./New-features.md)
 * [SAPI中的改动](./Sapi-changes.md)
 * [7.0.x版本开始停用的特性](./Deprecated.md)

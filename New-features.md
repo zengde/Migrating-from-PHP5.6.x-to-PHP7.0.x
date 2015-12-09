@@ -1,7 +1,8 @@
 # PHP5.6.x版本迁移至7.0.x版本
-## 新的特性
+## 新特性
 ### 标量类型声明
-标量类型声明有两种模式：强制（默认）模式、严格模式。下列类型的参数可以被运用（无论用强制模式还是严格模式）：字符串（[string](http://php.net/manual/en/language.types.string.php)）、整形（int）、浮点数（[float](http://php.net/manual/en/language.types.float.php)）和布尔型（bool）。其他类型在PHP5中有支持：类名、接口、[数组](http://php.net/manual/en/language.types.array.php)和[可被调用](http://php.net/manual/en/language.types.callable.php)的。
+标量类型声明有两种模式：强制（默认）模式和严格模式。现在可以使用下列类型的参数（无论用强制模式还是严格模式）：字符串（[string](http://php.net/manual/en/language.types.string.php)）、整数（int）、浮点数（[float](http://php.net/manual/en/language.types.float.php)）和布尔值（bool）。它们扩充了PHP5中引入的其他类型：类名、接口、[数组](http://php.net/manual/en/language.types.array.php)和[回调类型](http://php.net/manual/en/language.types.callable.php)。
+
 ```PHP
 <?php
 // Coercive mode
@@ -12,15 +13,18 @@ function sumOfInts(int ...$ints)
 
 var_dump(sumOfInts(2, '3', 4.1));
 ```
+
 上述例子输出：
 ```PHP
 int(9)
 ```
-当开启严格模式后，一个 [declare](http://php.net/manual/en/control-structures.declare.php) 声明必须置于PHP脚本文件开头，这意味着严格声明标量是基于文件可配的。这个指令不仅影响参数的类型声明，也影响到函数的返回值声明（详见下面的返回值声明）。<br>
-详细的标量类型声明的文档与示例，可以查看[类型声明](http://php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration)页面。
 
-### 返回类型声明
-PHP7新增了[返回类型声明](http://php.net/manual/en/functions.returning-values.php#functions.returning-values.type-declaration)，类似于[参数类型声明](http://php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration)，返回类型声明提前声明了函数返回值的类型。可用的声明类型与参数声明中可用的[类型](http://php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration.types)相同。
+要使用严格模式， 必须在文件顶部声明一个[declare](http://php.net/manual/en/control-structures.declare.php)指令，这意味着严格声明标量是基于文件可配的。这个指令不仅影响参数的类型声明，也影响到函数的返回值声明（参见[返回值类型声明](http://php.net/manual/en/functions.returning-values.php#functions.returning-values.type-declaration)，内置的php函数以及扩展中加载的php函数）。
+
+完整的标量类型声明文档和示例参见[类型声明](http://php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration)章节。
+
+### 返回值类型声明
+PHP7新增了[返回类型声明](http://php.net/manual/en/functions.returning-values.php#functions.returning-values.type-declaration)，类似于[参数类型声明](http://php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration)，返回类型声明指明了函数返回值的类型。可用的声明类型与参数声明中可用的[类型](http://php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration.types)相同。
 ```PHP
 <?php
 
@@ -42,10 +46,10 @@ Array
     [2] => 24
 )
 ```
-详细的返回值声明相关的文档和示例代码可以查阅[返回值声明](http://php.net/manual/en/functions.returning-values.php#functions.returning-values.type-declaration)文档。
+完整的返回值声明文档和示例代码可以参见[返回值类型声明](http://php.net/manual/en/functions.returning-values.php#functions.returning-values.type-declaration)。
 
-### NULL合并操作符（“??”）
-NULL合并操作符（“??”），已添加为一种语法糖用于需要使用三元表达式与[isset()](http://php.net/manual/en/function.isset.php)结合的常见情况。如果变量存在且不为**NULL**，那么返回第一个表达式的值，否则，返回第二个表达式的值。
+### NULL合并运算符（“??”）
+由于日常使用中存在大量需要使用三元表达式与[isset()](http://php.net/manual/en/function.isset.php)结合的情况，php7新增了一个语法糖：NULL合并运算符（“??”）。如果变量存在且不为**NULL**，那么返回第一个操作数的值，否则，返回第二个擦作数的值。
 ```PHP
 <?php
 // Fetches the value of $_GET['user'] and returns 'nobody'
@@ -61,7 +65,7 @@ $username = $_GET['user'] ?? $_POST['user'] ?? 'nobody';
 ?>
 ```
 ### 结合比较运算符 (<=>)
-结合比较运算符用于比较两个表达式。它返回一个大于0、等于0、小于0的数，用于表示$a与$b之间的关系。比较的原则是沿用PHP的[常规比较规则](http://php.net/manual/en/types.comparisons.php)进行的。
+结合比较运算符用于比较两个表达式。当$a小于、等于或大于$b时分别返回一个大于0、等于0、小于0的整数。比较的原则是根据PHP的[类型比较规则](http://php.net/manual/en/types.comparisons.php)执行的。
 ```PHP
 <?php
 // Integers
@@ -80,7 +84,7 @@ echo "a" <=> "b"; // -1
 echo "b" <=> "a"; // 1
 ?>
 ```
-### 通过[define()](http://php.net/manual/en/function.define.php)定义常量数组
+### 可以使用[define()](http://php.net/manual/en/function.define.php)来定义常量数组
 [Array](http://php.net/manual/en/language.types.array.php)类型的常量可以通过[define()](http://php.net/manual/en/function.define.php)来定义了。在PHP5.6中仅能通过const定义。
 ```PHP
 <?php
@@ -95,7 +99,7 @@ echo ANIMALS[1]; // outputs "cat"
 ```
 
 ### 匿名类
-可以通过new关键字初始化一个匿名类。匿名类可以用在完整的类中定义的一次性的对象。
+支持通过new class添加一个匿名类。匿名类可以用在完整的类中定义的一次性的对象。
 ```PHP
 <?php
 interface Logger {
@@ -129,7 +133,7 @@ var_dump($app->getLogger());
 object(class@anonymous)#2 (0) {
 }
 ```
-详细文档可以查看[匿名类参考](http://php.net/manual/en/language.oop5.anonymous.php)
+详细文档可以参见[匿名类参考](http://php.net/manual/en/language.oop5.anonymous.php)
 
 ### Unicode 代码点转义语法
 通过十六进制形式的*代码点*与双引号或heredoc组成的字符串生成UTF-8代码点，可以接受任何有效的*代码点*，并且开头的0是可以省略的。
