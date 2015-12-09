@@ -93,27 +93,40 @@ var_dump($a);
 ?>
 ```
 上述例子在PHP5中的输出为：
-```PHP
-array(3) {
-  [0]=>
-  int(3)
-  [1]=>
-  int(2)
-  [2]=>
-  int(1)
-}
-```
+> array(3) {
+> 
+>   [0]=>
+>   
+>   int(3)
+>   
+>   [1]=>
+>   
+>   int(2)
+>   
+>   [2]=>
+>   
+>   int(1)
+>   
+> }
+
 而在PHP7中的输出为：
-```php
-array(3) {
-  [0]=>
-  int(1)
-  [1]=>
-  int(2)
-  [2]=>
-  int(3)
-}
-```
+> array(3) {
+> 
+>   [0]=>
+>   
+>   int(1)
+>   
+>   [1]=>
+>   
+>   int(2)
+>   
+>   [2]=>
+>   
+>   int(3)
+>   
+> }
+
+
 在一般情况下，不建议依靠 [list\(\)](http://php.net/manual/en/function.list.php) 函数赋值的顺序，因为这个实现细节有可能会在未来改变。
 
 ##### 使用空的[list\(\)](http://php.net/manual/en/function.list.php) 函数参数被移除
@@ -141,18 +154,28 @@ var_dump($array);
 ```
 PHP5中的输出：
 > array(2) {
+> 
 >   ["b"]=>
+>   
 >   &int(1)
+>   
 >   ["a"]=>
+>   
 >   &int(1)
+>   
 > }
 
 PHP7中的输出
 > array(2) {
+> 
 >   ["a"]=>
+>   
 >   &int(1)
+>   
 >   ["b"]=>
+>   
 >   &int(1)
+>   
 > }
 
 
@@ -208,12 +231,16 @@ foreach ($array as &$val) {
 ```
 PHP5中的输出
 > int(1)
+> 
 > int(2)
+> 
 > bool(false)
 
 PHP7中的输出
 > int(0)
+> 
 > int(0)
+> 
 > int(0)
 
 
@@ -236,6 +263,7 @@ foreach ($array as &$val) {
 
 在PHP7的输出为：
 > int(0)
+> 
 > int(1)
 
 #### [non-Traversable](http://php.net/manual/en/class.traversable.php) 对象的遍历
@@ -274,7 +302,7 @@ var_dump(0%0);
 ?>
 ```
 
-> 在php5中的输出：
+在php5中的输出：
 > Warning: Division by zero in %s on line %d
 > bool(false)
 > 
@@ -306,13 +334,18 @@ var_dump(substr("foo", "0x1"));
 ```
 在PHP5中的输出：
 > bool(true)
+> 
 > bool(true)
+> 
 > int(15)
+> 
 > string(2) "oo"
 
 在PHP7中的输出：
 > bool(false)
+> 
 > bool(false)
+> 
 > int(0)
 > 
 > Notice: A non well formed numeric value encountered in /tmp/test.php on line 5
