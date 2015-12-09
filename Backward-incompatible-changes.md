@@ -127,7 +127,7 @@ list($x, list(), $y) = $a;
 ```
 
 ##### [list\(\)](http://php.net/manual/en/function.list.php) 函数不能解包字符串
-[list\(\)](http://php.net/manual/en/function.list.php) 不再允许拆解[字符串](http://php.net/manual/en/language.types.string.php)变量为字母，而应该使用[str_split](http://php.net/manual/en/function.str-split.php)函数。
+[list\(\)](http://php.net/manual/en/function.list.php) 不再允许拆解[字符串](http://php.net/manual/en/language.types.string.php)变量，而应该使用[str_split](http://php.net/manual/en/function.str-split.php)函数。
 
 #### 在数组中的元素通过引用方式创建时，数组顺序会被改变
 数组中的元素在通过引用方式创建时，其数组顺序会被自动的改变。例如：
